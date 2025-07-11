@@ -9,7 +9,12 @@ from pydub import AudioSegment
 from moviepy import VideoFileClip
 import argparse
 
-
+#TODO: MAYBE DO SOMETHING TO DELETE GREEK AND TAIWANESE RECORDINGS, and PITT-org??
+#TODO: DePaul no quedó como en nuestros datos.
+#TODO: Holland no quedó como en nuestros datos.
+#TODO: Protocol/Baycrest & /Baycrest-PPA no quedó como en nuestros datos.
+#TODO: Protocol/Delaware tiene más datos que los nuestros.
+#TODO: Algunos de WLS no quedaron iguales - Pero son como max 2 por carpeta
 def process_audios(dir):
     
     BASE_PATH = '/buckets/projects/ct_igc_phase3/phase3/talkbank_dementia'

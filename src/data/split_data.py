@@ -331,7 +331,7 @@ def check_minimum_length(df):
     
     return df
 
-def data_split(df):
+def data_split_segments(df):
 
     df.loc[:,'test_talkbank'] = df.loc[:,'test_eureka'].apply(lambda x: x if not pd.isna(x) else False)
     df.loc[df['language']=='mandarin','test_talkbank'] = True
@@ -339,24 +339,75 @@ def data_split(df):
     df.loc[df['study']=='holland','test_talkbank'] = True
 
     #TODO: EXPLAIN WHY WE ARE DOING THIS
-    include_test = []    
-    """ 
-    language     study          id  ... unique_id test_talkbank                            task
-1940  english  delaware        04-1  ...    172965          True  Cookie Theft + Discourse tasks
-2003  english       wls       11928  ...    904624          True                    Cookie Theft
-2164  english       wls       14895  ...    572407          True                    Cookie Theft
-2325  english       wls       09636  ...    245121          True                    Cookie Theft
-2364  english       wls       10723  ...    129556          True                    Cookie Theft
-2702  english       wls       04532  ...    177767          True                    Cookie Theft
-2972  english       wls       15842  ...    278794          True                    Cookie Theft
-3196  english       wls       02213  ...    247442          True                    Cookie Theft
-3708   german  jalvingh     PPA_LPA  ...    180674          True               Spontaneus speech
-3710   german  jalvingh  Park_MCI04  ...    270341          True               Spontaneus speech
-3712   german  jalvingh       FTD03  ...    352153          True               Spontaneus speech
-3716   german  jalvingh       FTD01  ...    508060          True               Spontaneus speech
+    include_test = {'study':['delaware','wls','wls','wls','wls','wls','wls','wls','jalvingh','jalvingh','jalvingh','jalvingh'], 
+                    'id':['04-1','14895','11928','09636','10723','04532','15842','02213','PPA_LPA','Park_MCI04','FTD03','FTD01'],}    
+    df.loc[df['study'].isin(include_test['study']) & df['id'].isin(include_test['id']), 'test_talkbank'] = True
 
-"""
+    df.to_csv('files/split_audios_final_partition.csv',index=False)
 
+    return df
+
+def generate_files_training_segments(df):
+    #METADATA
+    df_metadata = df[['segment_id','test_talkbank']].copy()
+    df_metadata['uid'] = df_metadata['segment_id']
+
+    df_metadata['split'] = df_metadata.apply(lambda x: "train" if not x['test_talkbank'] else "test",axis=1)
+
+    df_metadata = df_metadata.drop(columns=['segment_id','test_talkbank'])
+    df_metadata.to_csv('files/Metadata.csv',index=False)
+
+    #ALL LABELS
+    df_label = df[['segment_id','diagnosis']].copy()
+    df_label['uid'] = df_label['segment_id']
+
+    df_label['diagnosis_control'] = df_label.apply(lambda x: 1 if x['diagnosis']=='hc' else 0,axis=1)
+    df_label['diagnosis_mci'] = df_label.apply(lambda x: 1 if x['diagnosis']=='mci' else 0,axis=1)
+    df_label['diagnosis_adrd'] = df_label.apply(lambda x: 1 if x['diagnosis']=='ad' else 0,axis=1)
+    df_label['diagnosis_other'] = df_label.apply(lambda x: 1 if x['diagnosis']=='other_dem' else 0,axis=1)
+
+    df_label = df_label.drop(columns=['diagnosis','segment_id'])
+    df_label.to_csv('files/All_labels.csv',index=False)
+
+    #TRAINING LABELS
+    df_label = df[df['test_talkbank']==False][['segment_id','diagnosis']].copy()
+    df_label['uid'] = df_label['segment_id']
+
+    df_label['diagnosis_control'] = df_label.apply(lambda x: 1 if x['diagnosis']=='hc' else 0,axis=1)
+    df_label['diagnosis_mci'] = df_label.apply(lambda x: 1 if x['diagnosis']=='mci' else 0,axis=1)
+    df_label['diagnosis_adrd'] = df_label.apply(lambda x: 1 if x['diagnosis']=='ad' else 0,axis=1)
+    df_label['diagnosis_other'] = df_label.apply(lambda x: 1 if x['diagnosis']=='other_dem' else 0,axis=1)
+
+    df_label = df_label.drop(columns=['diagnosis','segment_id'])
+    df_label.to_csv('files/Train_labels.csv',index=False)
+
+    #TEST LABELS
+    df_label = df[df['test_talkbank']==True][['segment_id','diagnosis']].copy()
+    df_label['uid'] = df_label['segment_id']
+
+    df_label['diagnosis_control'] = df_label.apply(lambda x: 1 if x['diagnosis']=='hc' else 0,axis=1)
+    df_label['diagnosis_mci'] = df_label.apply(lambda x: 1 if x['diagnosis']=='mci' else 0,axis=1)
+    df_label['diagnosis_adrd'] = df_label.apply(lambda x: 1 if x['diagnosis']=='ad' else 0,axis=1)
+    df_label['diagnosis_other'] = df_label.apply(lambda x: 1 if x['diagnosis']=='other_dem' else 0,axis=1)
+
+    df_label = df_label.drop(columns=['diagnosis','segment_id'])
+    df_label.to_csv('files/Test_labels.csv',index=False)  
+
+    #Eureka TEST
+    df_label = df[(df['processed_path']!='')&(df['test_eureka']==True)][['segment_id','diagnosis']].copy()
+    df_label['uid']=df_label['segment_id']
+
+    df_label['diagnosis_control'] = df_label.apply(lambda x: 1 if x['diagnosis']=='hc' else 0,axis=1)
+    df_label['diagnosis_mci'] = df_label.apply(lambda x: 1 if x['diagnosis']=='mci' else 0,axis=1)
+    df_label['diagnosis_adrd'] = df_label.apply(lambda x: 1 if x['diagnosis']=='ad' or x['diagnosis']=='other_dem' else 0,axis=1)
+
+    df_label = df_label.drop(columns=['diagnosis','segment_id'])
+    df_label.to_csv('files/Test_labels_eureka.csv',index=False)
+
+    df[(df['study']=='vas')|(df['language']=='mandarin')][['segment_id','study','language']].to_csv('./files/out_of_distribution_data.csv',index=False)
+
+
+    return df_metadata, df_label
 
 
 def main():
@@ -419,6 +470,12 @@ def main():
 
     df = check_minimum_length(df)
 
+    df = data_split_segments(df)
+
+    df_metadata, df_label = generate_files_training_segments(df)
+
+    #TODO: No entiendo bien la diferencia entre la sección
+    # get splits for full audios (no segments) 
 
 
 
