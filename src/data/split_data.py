@@ -474,8 +474,7 @@ def main():
 
     df_metadata, df_label = generate_files_training_segments(df)
 
-    #TODO: No entiendo bien la diferencia entre la sección
-    # get splits for full audios (no segments) 
+    #TODO: Quedé en Generate splits for full audios (no segments)
 
 
 
