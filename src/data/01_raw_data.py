@@ -9,17 +9,12 @@ from pydub import AudioSegment
 from moviepy import VideoFileClip
 import argparse
 
-#TODO: MAYBE DO SOMETHING TO DELETE GREEK AND TAIWANESE RECORDINGS, and PITT-org??
-#TODO: DePaul no quedó como en nuestros datos.
-#TODO: Holland no quedó como en nuestros datos.
-#TODO: Protocol/Baycrest & /Baycrest-PPA no quedó como en nuestros datos.
-#TODO: Protocol/Delaware tiene más datos que los nuestros.
-#TODO: Algunos de WLS no quedaron iguales - Pero son como max 2 por carpeta
-def process_audios(dir):
+
+def process_audios(dir, base_path_raw):
     
-    BASE_PATH = '/buckets/projects/ct_igc_phase3/phase3/talkbank_dementia'
-    TRANSCRIPT_DIR = '/buckets/projects/ct_igc_phase3/phase3/talkbank_dementia_transcripts'
-    OUTPUT_DIR = '/buckets/projects/ct_igc_phase3/phase3/talkbank_dementia_processed'
+    BASE_PATH = os.path.join(base_path_raw, 'talkbank_dementia')
+    TRANSCRIPT_DIR = os.path.join(base_path_raw, 'talkbank_dementia_transcripts')
+    OUTPUT_DIR = os.path.join(base_path_raw, 'talkbank_dementia_processed')
     FILE_EXTENSIONS = ["mp3", "mp4", "wav"]
 
     def extract_timestamps(path):
@@ -96,11 +91,11 @@ def process_audios(dir):
                 continue
             split_audio(dir,file, timestamps)
 
-def download_audios(tb_cookie):
+def download_audios(tb_cookie, output_dir):
     # === Configuration ===
     BASE_URL = "https://media.talkbank.org/dementia"
     BASE_URL_2 = "https://media.talkbank.org:443/dementia/"
-    OUTPUT_DIR = "/buckets/projects/ct_igc_phase3/phase3/talkbank_dementia"
+    OUTPUT_DIR = os.path.join(output_dir, "talkbank_dementia")
     #TODO: TAKE OUT SESSION COOKIE
     SESSION_COOKIE = tb_cookie
     FILE_EXTENSIONS = {".zip", ".mp3", ".mp4", ".wav", ".cha", ".xml", ".txt", ".pdf", ".tgz", ".xlsx", ".csv", ".xls"}
@@ -217,12 +212,11 @@ def download_audios(tb_cookie):
 
     crawl(BASE_URL)
 
-def download_transcripts(tb_cookie):
+def download_transcripts(tb_cookie, output_dir):
     # === Configuration ===
     BASE_URL = "https://git.talkbank.org/dementia/data-orig"
     BASE_URL_2 = "https://git.talkbank.org:443/dementia/data-orig/"
-    OUTPUT_DIR = "/buckets/projects/ct_igc_phase3/phase3/talkbank_dementia_transcripts"
-    #TODO: TAKE OUT SESSION COOKIE
+    OUTPUT_DIR = os.path.join(output_dir,"talkbank_dementia_transcripts")
     #TODO: EXPLAIN WHERE TO OBTAIN THIS COOKIE
     SESSION_COOKIE = tb_cookie
     FILE_EXTENSIONS = {".cha"}
@@ -339,8 +333,8 @@ def download_transcripts(tb_cookie):
     # if __name__ == "__main__":
     crawl(BASE_URL)
 
-def process_holland_audios():
-    base_path = '/buckets/projects/ct_igc_phase3/phase3/talkbank_dementia'
+def process_holland_audios(base_path):
+    base_path = os.path.join(base_path, 'talkbank_dementia')
 
     path = os.path.join(base_path,'English/Holland')
     for file in os.listdir(path):
@@ -364,7 +358,7 @@ def process_holland_audios():
     audio_2[75500:].export(os.path.join(saving_path,'participant_3.mp3'))
     audio_3.export(os.path.join(saving_path,'participant_4.mp3'))
 
-def main(tb_cookie):
+def main(tb_cookie, output_dir):
     # Define the URL
     url = "https://media.talkbank.org/dementia"
 
@@ -393,13 +387,10 @@ def main(tb_cookie):
 
     print("HTML content saved to dementia_page.html")
 
-    download_audios(tb_cookie)
-    process_holland_audios()
-    download_transcripts(tb_cookie)
-    process_audios('')
-
-
-
+    download_audios(tb_cookie, output_dir)
+    process_holland_audios(output_dir)
+    download_transcripts(tb_cookie, output_dir)
+    process_audios('',output_dir)
 
     return
 
@@ -407,6 +398,6 @@ def main(tb_cookie):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Download and process TalkBank dementia data.")
     parser.add_argument('--cookie', type=str, required=True, help='Session cookie for TalkBank')
-    #TODO: ADD AN ARGS TO GET THE BASE PATH
+    parser.add_argument('--output_dir', type=str,default='../../data/raw', help='Path to save the downloaded data')
     args = parser.parse_args()
-    main(args.cookie)
+    main(args.cookie, args.output_dir)
