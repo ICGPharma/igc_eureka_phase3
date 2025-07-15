@@ -17,16 +17,23 @@ igc_phase3/
 │   └── data/             
 │       ├── 01_raw_data.py                  # Script to load and inspect raw audio data
 │       ├── 02_split_data.py                # Train/test split strategy, including benchmark splits
-│       ├── 03_extract_metadata.py          # Extraction of speaker age, gender, and education.
-│       ├── 04_identify_tasks.py            # Identify and annotate tasks per recording
+│       ├── 03_audio_preprocessing.py       # Enhance audio quality.
+│       ├── 04_extract_metadata.py          # Extraction of speaker age, gender, and education.
 │       ├── 05_extract_acustic_features.py  # Low-level audio feature extraction
 │       ├── 06_STT_nonenglish_audios.py     # Speech-to-text and translation for non-English recordings
-│       └── 07_TTS_nonenglish_audios.py     # Speech synthesis to English
+│       ├── 07_TTS_nonenglish_audios.py     # Speech synthesis to English
+│       └── 08_identify_tasks.py            # Identify and annotate tasks per recording
 │        
 │   └── model/
 ├── LICENSE                 
 └── README.md     
 ```
+## Reproducing the Data Processing Pipeline
+To replicate the full data processing pipeline, run the scripts in the ```src/data/``` directory in the numerical order indicated by their filenames. Each script performs a distinct preprocessing step, ranging from audio download to metadata extraction and task identification.
+
+### Note
+Some scripts require external authentication or model checkpoints (e.g., Hugging Face tokens or OpenVoice weights). Refer to the respective sections below for further instructions.
+
 ## Accessing the Data
 
 Access to DementiaBank data requires authentication via a session cookie. To download data using ```src/data/01_raw_data.py```, follow these steps:

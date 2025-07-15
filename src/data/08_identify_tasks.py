@@ -1,11 +1,14 @@
 import pandas as pd
+import argparse
+import os 
 
-#TODO: ADD ARGS for the files.
+def main(partition_file_path, processed_files_path):
 
-def main():
+    df = pd.read_csv(partition_file_path)
+    training_metadata_file_segments = pd.read_csv(os.path.join(processed_files_path, 'Metadata.csv'))
 
-    df = pd.read_csv('audios_final_partition.csv')
     df['task'] = ""
+
     df['task'][df['study']=='ivanova'] = 'Reading'
     df['task'][df['study']=='wls'] = 'Image description'
     df['task'][df['study']=='baycrest'] = 'Discourse tasks' #Cinderella + AphasiaBank discourse tasks 
@@ -28,8 +31,17 @@ def main():
     df['task'][df['study']=='delaware'] = 'Discourse tasks' # 'Image description + Discourse tasks' #Picture descriptions -- Cookie Theft, Cat Rescue, "Going and Coming" (Norman Rockwell) / Story narrative -- Cinderella* / Procedural narrative -- Peanut butter and jelly sandwich / Personal narrative -- Hometown
     df['task'][df['study']=='jalvingh'] = 'Spontaneus speech'
 
-    df.to_csv('audios_final_partition_task_2.csv', index=False)
+    training_metadata_file_segments = training_metadata_file_segments.merge(df[['segment_id','task']], left_on='uid', right_on='segment_id',how='left')
+    training_metadata_file_segments.drop(columns=['segment_id'], inplace=True)
+
+    df.to_csv(partition_file_path, index=False)
+    training_metadata_file_segments.to_csv(os.path.join(processed_files_path, 'Metadata.csv'), index=False)
 
 
 if __name__=="__main__":
-    main()
+    parser = argparse.ArgumentParser(description="Download and process TalkBank dementia data.")
+    parser.add_argument('--partition_file_path', type=str, default='../../data/processed/split_audios_final_partition.csv', help='Path to split data file')
+    parser.add_argument('--processed_files_path', type=str,default='../../data/processed', help='Path to save the processed file')
+    args = parser.parse_args()
+
+    main(args.partition_file_path, args.processed_files_path)
