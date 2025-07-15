@@ -125,9 +125,8 @@ def process_audio_directory(input_dir, output_file, partition, window_size=0.2, 
 
 if __name__ == "__main__":
     args = argparse.ArgumentParser(description="Extract features from audio files in a directory.")
-    args.add_argument("--processing_partition", type=str, required=True, help="Directory containing audio files. Either train or test partition.")
-    #TODO: CHANGE THIS TO THE INTERNAL PATH WHERE DATA IS GOING TO BE STORED FROM THE OTHER SCRIPTS
-    args.add_argument("--path_to_partition", type=str, required=True, help="Directory containing audio files. Either train or test partition.") #Default: '/buckets/projects/eureka/data_exp1/post_data/')
+    args.add_argument("--processing_partition", type=str, default="train_audios", help="Directory containing audio files. Either train or test partition (train_audios or test_audios).")
+    args.add_argument("--path_to_partition", type=str, default="../../data/processed/post_data/", help="Directory containing audio files. Either train or test partition.")
     args.add_argument("--saving_path", type=str, default='../../data/processed/', help="Directory to save the obtained file.")
     args = args.parse_args()
 
@@ -137,3 +136,4 @@ if __name__ == "__main__":
     print(f"Input Folder: {args.processing_partition}")
     print(f"Output File: {args.output_csv_file}")
     process_audio_directory(args.processing_partition, args.output_csv_file, args.part)
+

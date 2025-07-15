@@ -96,7 +96,6 @@ def download_audios(tb_cookie, output_dir):
     BASE_URL = "https://media.talkbank.org/dementia"
     BASE_URL_2 = "https://media.talkbank.org:443/dementia/"
     OUTPUT_DIR = os.path.join(output_dir, "talkbank_dementia")
-    #TODO: TAKE OUT SESSION COOKIE
     SESSION_COOKIE = tb_cookie
     FILE_EXTENSIONS = {".zip", ".mp3", ".mp4", ".wav", ".cha", ".xml", ".txt", ".pdf", ".tgz", ".xlsx", ".csv", ".xls"}
 
@@ -217,7 +216,6 @@ def download_transcripts(tb_cookie, output_dir):
     BASE_URL = "https://git.talkbank.org/dementia/data-orig"
     BASE_URL_2 = "https://git.talkbank.org:443/dementia/data-orig/"
     OUTPUT_DIR = os.path.join(output_dir,"talkbank_dementia_transcripts")
-    #TODO: EXPLAIN WHERE TO OBTAIN THIS COOKIE
     SESSION_COOKIE = tb_cookie
     FILE_EXTENSIONS = {".cha"}
 
