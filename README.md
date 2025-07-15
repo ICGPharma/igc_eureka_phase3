@@ -84,3 +84,13 @@ After generating translations using ```src/data/06_STT_nonenglish_audios.py```, 
 
 ### Note 2
 Transcriptions where obatined using a **ADD GCP LARGE GPU**.
+
+## Generation of Translated Audios
+To run ```src/data/07_TTS_nonenglish_audios.py```, you must first download the **OpenVoice v2** checkpoint from the official repository ([OpenVoice Usage](https://github.com/myshell-ai/OpenVoice/blob/main/docs/USAGE.md)). Ensure the checkpoint files are placed in the expected directory path as required by the script.
+
+## Environment Setup
+We recommend using two separate Python environments for this project:
+* One for Whisper-related scripts (speech-to-text and translation)
+* One for OpenVoice 2 (text-to-speech audio generation)
+
+This separation is advised because of dependency incompatibilities between Whisper and OpenVoice 2. Installing both in the same environment may cause conflicts.

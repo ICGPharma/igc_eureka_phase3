@@ -64,9 +64,6 @@ def transcribe_audios(audios_path, intermediate_files_path):
 
     for idx, participant_info in tqdm(info_file.iterrows(), total=len(info_file)):
 
-        if idx > 10:
-            continue
-
         file_path = os.path.join(audios_path, str(participant_info['unique_id'])+'.mp3')
         
         language = participant_info['language']
@@ -120,8 +117,7 @@ def translate_audios(info_dataframe, intermediate_files_path):
         metadata_file_lgn = info_dataframe[info_dataframe['language'] == language_key]
         
         for idx, row in tqdm(metadata_file_lgn.iterrows(), total=len(metadata_file_lgn)):
-            if idx > 10:
-                continue
+
             transcribed_text = row['transcription']
             translated_text = translate_with_llama(transcribed_text, tokenizer, model, device, language_name)
             info_dataframe.at[idx, 'translation'] = translated_text
