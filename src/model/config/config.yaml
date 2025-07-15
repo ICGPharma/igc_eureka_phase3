@@ -1,0 +1,60 @@
+data:
+  metadata_file: "../data/post_data/Metadata.csv"
+  labels_file: "../data/post_data/All_labels.csv"
+  train_features: "../data/post_data/Train_features.csv"
+  test_features: "../data/Test_features.csv"
+  train_audio_dir: "../data/post_data/train_audios"
+  test_audio_dir: "../data/post_data/test_audios"
+  audio_dir: "../data/post_data"
+  # test_audio_dir: "/buckets/projects/eureka/data_exp1/post_data/openvoice_translation_llama_V1"
+  test_labels_talkbank: "../data/post_data/Test_labels.csv"
+  test_labels_eureka: "../data/post_data/Test_labels_eureka.csv"
+  test_labels_ood: "../data/post_data/out_of_distribution_data.csv"
+  train_audio_features: "../data_exp1/train_audios_features_phase3.csv"
+  test_audio_features: "../data_exp1/test_audios_features_phase3.csv"
+  loo_file: "../data/audios_final_partition_task_2.csv"
+
+training:
+  batch_size: 80
+  patience: 5
+  epochs: 20
+  learning_rate: 1e-5
+  warmup_ratio: 0.2
+  weight_decay: 0.01
+  model_name: "openai/whisper-large-v3"
+  # model_name: "distil-whisper/distil-large-v3"
+  # model_name: "nyrahealth/CrisperWhisper"
+  device: "cuda"
+  num_labels: 4
+  gpus: "0,1,2,3"
+  freeze: True
+  custom: False
+  load_checkpoint: True
+  val_eureka: False
+  # Leave one out options:
+  # english, spanish, mandarin
+  # Reading, Alexa, Discourse tasks, Image description, Questions, Sentence Construction, Word Fluency,Story Recall, Spontaneus speech
+  leave_out: "english"
+paths:
+  results_path: "../results/ood_english"
+  checkpoints_path: "../checkpoints/ood_english"
+  final_model: "../checkpoints/ood_english/final_model.pth"
+  base_checkpoint: "../checkpoints/whisper-large_fullaudio/final_model.pth"
+  # dataset_cache: "/buckets/projects/eureka/transformer/cache2"
+  # dataset_cache: "/buckets/projects/eureka/transformer/cache_translate/no_overlap_v2"
+
+model:
+  include_metadata: False
+  include_features: False
+  random_segment: False
+  num_layers: 3
+  num_heads: 32
+  max_segments: 16
+  mlp_classifier: False
+  val_split: True
+  # Choose model_type: "text", "audio_text", "whisper_llama_fusion"
+  model_type: "audio" 
+
+misc:
+  selected_task: null
+  augment: True

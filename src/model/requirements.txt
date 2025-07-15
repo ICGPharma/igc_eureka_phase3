@@ -1,0 +1,16 @@
+numpy
+pandas
+tqdm
+noisereduce
+pedalboard
+torch 
+torchvision 
+torchaudio
+transformers
+pyloudnorm
+ipykernel
+ipython
+librosa
+matplotlib
+scikit-learn
+torch-audiomentations

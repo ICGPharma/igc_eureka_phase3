@@ -1,0 +1,25 @@
+experiment_name: "Transformer_optimization"
+epochs: 3
+# n_trials: 100
+duration: 57  # Timeout in hours
+device: "cuda"
+save_model: True
+checkpoints_path: "../checkpoints/sweep"
+weight_decay: 0.01
+warmup_ratio: 0.1
+data:
+  metadata_file: "../data_exp1/post_data/Metadata.csv"
+  labels_file: "../data_exp1/post_data/All_labels.csv"
+  train_audio_dir: "../data_exp1/post_data/train_audios"
+  test_audio_dir: "../data_exp1/post_data/test_audios"
+paths:
+  dataset_cache: "/buckets/projects/eureka/transformer/cache2"
+training:
+  model_name: "openai/whisper-large-v3"
+misc:
+  augment: True
+model:
+  include_features: False
+  include_metadata: False
+  random_segment: False
+  val_split: False
