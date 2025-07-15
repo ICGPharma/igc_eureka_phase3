@@ -1,0 +1,49 @@
+data:
+  metadata_file: "../data_exp1/post_data/Metadata.csv"
+  labels_file: "../data_exp1/post_data/All_labels.csv"
+  train_features: "../data_exp1/post_data/Train_features.csv"
+  test_features: "../data_exp1/Test_features.csv"
+  train_audio_dir: "../data_exp1/post_data/train_audios"
+  test_audio_dir: "../data_exp1/post_data/test_audios"
+  test_labels_talkbank: "../data_exp1/post_data/Test_labels.csv"
+  test_labels_eureka: "../data_exp1/post_data/Test_labels_eureka.csv"
+  test_labels_ood: "../data_exp1/post_data/out_of_distribution_data.csv"
+  train_audio_features: "../data_exp1/train_audios_features_phase3.csv"
+  test_audio_features: "../data_exp1/test_audios_features_phase3.csv"
+
+training:
+  # batch_size: 12
+  batch_size: 1 # For freezed model
+  patience: 10
+  epochs: 50
+  learning_rate: 1e-4
+  warmup_ratio: 0.1
+  weight_decay: 0.01
+  model_name: "openai/whisper-large-v3"
+  # model_name: "distil-whisper/distil-large-v3"
+  # model_name: "nyrahealth/CrisperWhisper"
+  device: "cuda"
+  num_labels: 4
+  gpus: "0,1,2,3"
+  freeze: True
+  custom: False
+  load_checkpoint: True
+paths:
+  results_path: "../results/transformer_features"
+  checkpoints_path: "../checkpoints/transformer_features"
+  final_model: "../checkpoints/whisper-large_fullaudio/final_model.pth"
+  base_checkpoint: "../checkpoints/whisper-large_fullaudio/final_model.pth"
+  dataset_cache: "/buckets/projects/eureka/transformer/cache2"
+
+model:
+  include_metadata: False
+  include_features: True
+  random_segment: False
+  val_split: False
+  # Choose model_type: "text", "audio_text", "whisper_llama_fusion"
+  model_type: "audio" 
+  load_checkpoint: True
+
+misc:
+  selected_task: null
+  augment: True
